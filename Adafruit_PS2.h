@@ -78,7 +78,7 @@ class Adafruit_PS2Trackpad : public Adafruit_PS2Mouse {
   uint32_t getStatus(void);
   boolean readData(void);
 
-
+  boolean finger, gesture;
  private:
 
 

@@ -3,7 +3,6 @@
  * an arduino sketch to interface with a ps/2 mouse.
  * Also uses serial protocol to talk back to the host
  * and report what it finds.
-http://www.win.tue.nl/~aeb/linux/kbd/scancodes-13.html
 http://www.arduino.cc/cgi-bin/yabb2/YaBB.pl?num=1251398431
 */
 
@@ -61,22 +60,36 @@ boolean Adafruit_PS2Mouse::reset(void) {
 boolean Adafruit_PS2Trackpad::begin(void) {
   if (! reset()) return false;
 
-  E6Report();
-  E7Report();
 
-  //write(ADAFRUIT_PS2_SETPOLL); // we will poll the mouse
-  //if (read() != ADAFRUIT_PS2_ACK) return false;
-  //delay(1);
+  // see http://www.win.tue.nl/~aeb/linux/kbd/scancodes-13.html sec 13.7
+  uint32_t e6 = E6Report();
+  uint8_t s1, s2, s3;
+  s1 = e6 >> 16;
+  s2 = e6 >> 8;
+  s3 = e6;
 
-  if (!tapMode(true)) return false;
-  Serial.println("Tap mode");
+  if (s3 != 0x64) return false; // not a trackpad?
+  if (s2 == 0) return false; // not a trackpad?
+
+  Serial.print("Trackpad found with ");
+  Serial.print(s2, DEC); 
+  Serial.println(" buttons");
+
+  if (s1 & 0x80)  // supports the e7 command report
+    E7Report();
+
+  if (!tapMode(false)) return false;
+  Serial.println("Tap mode set");
   
   getStatus();
 
   if (! absoluteMode()) return false;
-  Serial.println("Absolute mode");
-  //write(ADAFRUIT_PS2_SETSTREAMMODE);
-  //if (read() != ADAFRUIT_PS2_ACK) return false;
+  Serial.println("Absolute mode set");
+
+
+  //if (!command(ADAFRUIT_PS2_SETPOLL)) return false;
+  //delay(1);
+  //if (!command(ADAFRUIT_PS2_SETSTREAMMODE)) return false;
 
   inhibit();
 
@@ -88,6 +101,7 @@ uint32_t  Adafruit_PS2Trackpad::getStatus(void) {
   Serial.print("Status: ");
 
   if (!command(ADAFRUIT_PS2_DISABLE) ||
+      !command(ADAFRUIT_PS2_DISABLE) ||
       !command(ADAFRUIT_PS2_DISABLE) ||
       !command(ADAFRUIT_PS2_DISABLE) ||
       !command(ADAFRUIT_PS2_GETINFO)) 
@@ -169,6 +183,8 @@ uint32_t Adafruit_PS2Trackpad::E7Report(void) {
   write(ADAFRUIT_PS2_SETSCALE21);
   if (!command(ADAFRUIT_PS2_GETINFO)) return 0x0;
 
+  read();
+
   uint8_t reply0, reply1, reply2;
   reply0 = read();
   reply1 = read();
@@ -208,19 +224,30 @@ boolean Adafruit_PS2Trackpad::readData(void) {
   uint8_t packet[6];
   for (uint8_t x=0; x<6; x++) {
     packet[x] = read();
-   // Serial.print("0x"); Serial.print(packet[x], HEX); Serial.print("\t");
+    //Serial.print("0x"); Serial.print(packet[x], HEX); Serial.print("\t");
   }
-  //Serial.println();
 
-  left = right = middle = false;
-  if (packet[3] & 1) left = true;
-  if (packet[3] & 2) right = true;
-  if (packet[3] & 4) middle = true;
-  
-  x = packet[1] | ((packet[2] & 0x78) << (7 - 3));
-  y = packet[4] | ((packet[3] & 0x70) << (7 - 4));
+  if (packet[0] != 0xF8) return false;
+
+
+  gesture = finger = left = right = middle = false;
+  if (packet[3] & 0x1) left = true;
+  if (packet[3] & 0x2) right = true;
+  if (packet[3] & 0x4) middle = true;
+  if (packet[2] & 0x2) finger = true;
+  if (packet[2] & 0x1) gesture = true;
+
+  if (gesture) {
+    //http://marc.info/?l=linux-kernel&m=110708138225873
+    //Serial.print("  Gesture!  ");
+  }
+  x = packet[1] | ((packet[2] & 0x78) << 4);
+  y = packet[4] | ((packet[3] & 0x70) << 3);
   z = packet[5];
   
+  // Serial.println();
+
+  return true;
 }
 
 boolean Adafruit_PS2Mouse::readData(void) {
