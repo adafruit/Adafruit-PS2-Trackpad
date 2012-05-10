@@ -49,10 +49,10 @@ class Adafruit_PS2 {
   uint8_t _clk, _data;
 };
 
-class Adafruit_PS2Mouse : public Adafruit_PS2 {
+class Adafruit_PS2_Mouse : public Adafruit_PS2 {
  public:
-  Adafruit_PS2Mouse(uint8_t c, uint8_t d);
-  Adafruit_PS2Mouse();
+  Adafruit_PS2_Mouse(uint8_t c, uint8_t d);
+  Adafruit_PS2_Mouse();
 
   boolean begin(void);
   boolean reset(void);
@@ -66,9 +66,9 @@ class Adafruit_PS2Mouse : public Adafruit_PS2 {
 };
 
 
-class Adafruit_PS2Trackpad : public Adafruit_PS2Mouse {
+class Adafruit_PS2_Trackpad : public Adafruit_PS2_Mouse {
  public:
-  Adafruit_PS2Trackpad(uint8_t c, uint8_t d);
+  Adafruit_PS2_Trackpad(uint8_t c, uint8_t d);
 
   boolean begin(void);
   uint32_t E6Report(void);

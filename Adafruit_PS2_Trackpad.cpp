@@ -1,4 +1,4 @@
-#include <Adafruit_PS2.h>
+#include <Adafruit_PS2_Trackpad.h>
 /*
  * an arduino sketch to interface with a ps/2 mouse.
  * Also uses serial protocol to talk back to the host
@@ -20,21 +20,21 @@ void Adafruit_PS2::constructor(uint8_t c, uint8_t d) {
   _data = d;
 }
 
-Adafruit_PS2Mouse::Adafruit_PS2Mouse(void) {
+Adafruit_PS2_Mouse::Adafruit_PS2_Mouse(void) {
 }
 
-Adafruit_PS2Mouse::Adafruit_PS2Mouse(uint8_t c, uint8_t d) {
+Adafruit_PS2_Mouse::Adafruit_PS2_Mouse(uint8_t c, uint8_t d) {
   constructor(c, d);
 
 
 }
-Adafruit_PS2Trackpad::Adafruit_PS2Trackpad(uint8_t c, uint8_t d) {
+Adafruit_PS2_Trackpad::Adafruit_PS2_Trackpad(uint8_t c, uint8_t d) {
   constructor(c, d);
 }
 
 
 
-boolean Adafruit_PS2Mouse::begin(void) {
+boolean Adafruit_PS2_Mouse::begin(void) {
 
   if (! reset()) return false;
 
@@ -46,7 +46,7 @@ boolean Adafruit_PS2Mouse::begin(void) {
 }
 
 
-boolean Adafruit_PS2Mouse::reset(void) {
+boolean Adafruit_PS2_Mouse::reset(void) {
   idle();
   if (!command(ADAFRUIT_PS2_RESET)) return false;
   if (read() != 0xAA) return false;
@@ -57,7 +57,7 @@ boolean Adafruit_PS2Mouse::reset(void) {
 }
 
 
-boolean Adafruit_PS2Trackpad::begin(void) {
+boolean Adafruit_PS2_Trackpad::begin(void) {
   if (! reset()) return false;
 
 
@@ -96,7 +96,7 @@ boolean Adafruit_PS2Trackpad::begin(void) {
   return true;
 }
 
-uint32_t  Adafruit_PS2Trackpad::getStatus(void) {
+uint32_t  Adafruit_PS2_Trackpad::getStatus(void) {
   uint8_t info[3];
   Serial.print("Status: ");
 
@@ -117,7 +117,7 @@ uint32_t  Adafruit_PS2Trackpad::getStatus(void) {
   return 1;
 }
 
-boolean Adafruit_PS2Trackpad::tapMode(boolean enable) {
+boolean Adafruit_PS2_Trackpad::tapMode(boolean enable) {
   uint8_t cmd, arg;
   if (enable) {
     cmd = ADAFRUIT_PS2_SETRATE;
@@ -148,7 +148,7 @@ boolean Adafruit_PS2Trackpad::tapMode(boolean enable) {
 
 
 
-uint32_t Adafruit_PS2Trackpad::E6Report(void) {
+uint32_t Adafruit_PS2_Trackpad::E6Report(void) {
   write(ADAFRUIT_PS2_SETRES);
   write(0x0); // argument for setres
   write(ADAFRUIT_PS2_SETSCALE11);
@@ -175,7 +175,7 @@ uint32_t Adafruit_PS2Trackpad::E6Report(void) {
 }
 
 
-uint32_t Adafruit_PS2Trackpad::E7Report(void) {
+uint32_t Adafruit_PS2_Trackpad::E7Report(void) {
   write(ADAFRUIT_PS2_SETRES);
   write(0x0); // argument for setres
   write(ADAFRUIT_PS2_SETSCALE21);
@@ -204,7 +204,7 @@ uint32_t Adafruit_PS2Trackpad::E7Report(void) {
 }
 
 
-boolean Adafruit_PS2Trackpad::absoluteMode(void) {
+boolean Adafruit_PS2_Trackpad::absoluteMode(void) {
   // alps magic knock, 4 disables before an enable
   if (!command(ADAFRUIT_PS2_DISABLE) ||
       !command(ADAFRUIT_PS2_DISABLE) ||
@@ -219,7 +219,7 @@ boolean Adafruit_PS2Trackpad::absoluteMode(void) {
 }
 
 
-boolean Adafruit_PS2Trackpad::readData(void) {
+boolean Adafruit_PS2_Trackpad::readData(void) {
   //write(0x0F);
   uint8_t packet[6];
   for (uint8_t x=0; x<6; x++) {
@@ -250,7 +250,7 @@ boolean Adafruit_PS2Trackpad::readData(void) {
   return true;
 }
 
-boolean Adafruit_PS2Mouse::readData(void) {
+boolean Adafruit_PS2_Mouse::readData(void) {
   if (!command(ADAFRUIT_PS2_READDATA)) return false;
 
   status = read();
@@ -264,7 +264,7 @@ boolean Adafruit_PS2Mouse::readData(void) {
   y = read();
 }
 
-uint8_t Adafruit_PS2Mouse::readID(void) {
+uint8_t Adafruit_PS2_Mouse::readID(void) {
   if (!command(ADAFRUIT_PS2_GETDEVICEID)) return -1;
 
   return read();
