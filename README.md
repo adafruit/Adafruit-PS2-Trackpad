@@ -1,3 +1,5 @@
+# Adafruit PS2 Trackpad Library [![Build Status](https://github.com/adafruit/Adafruit-PS2-Trackpad/workflows/Arduino%20Library%20CI/badge.svg)](https://github.com/adafruit/Adafruit-PS2-Trackpad/actions)[![Documentation](https://github.com/adafruit/ci-arduino/blob/master/assets/doxygen_badge.svg)](http://adafruit.github.io/Adafruit-PS2-Trackpad/html/index.html)
+
 This is a library for the Adafruit Capacitive Trackpad
 
   Designed specifically to work with the Adafruit Capacitive Trackpad 
