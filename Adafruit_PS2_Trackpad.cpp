@@ -50,6 +50,7 @@ boolean Adafruit_PS2_Mouse::begin(void) {
   read();
   delayMicroseconds(100);
   inhibit();
+  return true;
 }
 
 boolean Adafruit_PS2_Mouse::reset(void) {
@@ -288,6 +289,7 @@ boolean Adafruit_PS2_Mouse::readData(void) {
 
   x = read();
   y = read();
+  return true;
 }
 
 uint8_t Adafruit_PS2_Mouse::readID(void) {
