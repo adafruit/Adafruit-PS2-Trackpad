@@ -314,7 +314,7 @@ uint8_t Adafruit_PS2::read(void) {
     while (digitalRead(_clk))
       ;
     if (digitalRead(_data))
-      d |= _BV(i);
+      d |= bit(i);
     while (!digitalRead(_clk))
       ;
   }
